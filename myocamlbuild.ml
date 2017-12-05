@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 3f47ab681719703d179f0fd2e2823c02) *)
+(* DO NOT EDIT (digest: f15e488eef3d0698657c3621809364d6) *)
 module OASISGettext = struct
 (* # 22 "src/oasis/OASISGettext.ml" *)
 
@@ -920,23 +920,23 @@ let package_default =
           (["oasis_library_mariadb_ccopt"; "compile"],
             [
                (OASISExpr.EBool true,
-                 S [A "-ccopt"; A "-I"; A "-ccopt"; A "${pkg_ctypes_stubs}"])
+                 S
+                   [
+                      A "-ccopt";
+                      A "-I";
+                      A "-ccopt";
+                      A "${pkg_ctypes_stubs}";
+                      A "-ccopt";
+                      A "${mariadb_config_cflags}"
+                   ])
             ]);
           (["oasis_library_mariadb_cclib"; "link"],
             [
-               (OASISExpr.EBool true, S []);
-               (OASISExpr.EFlag "mariadb_connector",
-                 S [A "-cclib"; A "-lmariadb"]);
-               (OASISExpr.ENot (OASISExpr.EFlag "mariadb_connector"),
-                 S [A "-cclib"; A "-lmysqlclient"])
+               (OASISExpr.EBool true,
+                 S [A "-cclib"; A "${mariadb_config_libs}"])
             ]);
           (["oasis_library_mariadb_cclib"; "ocamlmklib"; "c"],
-            [
-               (OASISExpr.EBool true, S []);
-               (OASISExpr.EFlag "mariadb_connector", S [A "-lmariadb"]);
-               (OASISExpr.ENot (OASISExpr.EFlag "mariadb_connector"),
-                 S [A "-lmysqlclient"])
-            ]);
+            [(OASISExpr.EBool true, S [A "${mariadb_config_libs}"])]);
           (["oasis_library_mariadb_byte"; "ocaml"; "link"; "byte"],
             [(OASISExpr.EBool true, S [A "-warn-error"; A "+1..45"])]);
           (["oasis_library_mariadb_native"; "ocaml"; "link"; "native"],
@@ -949,6 +949,11 @@ let package_default =
             [(OASISExpr.EBool true, S [A "-warn-error"; A "+1..45"])]);
           (["oasis_library_mariadb_native"; "ocaml"; "compile"; "native"],
             [(OASISExpr.EBool true, S [A "-warn-error"; A "+1..45"])]);
+          (["oasis_executable_ffi_stubgen_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-ccopt"; A "${mariadb_config_cflags}"])
+            ]);
           (["oasis_executable_ffi_stubgen_byte"; "ocaml"; "link"; "byte"],
             [(OASISExpr.EBool true, S [A "-warn-error"; A "+1..45"])]);
           (["oasis_executable_ffi_stubgen_native"; "ocaml"; "link"; "native"],
@@ -971,6 +976,11 @@ let package_default =
               "native"
            ],
             [(OASISExpr.EBool true, S [A "-warn-error"; A "+1..45"])]);
+          (["oasis_executable_ffi_types_stubgen_ccopt"; "compile"],
+            [
+               (OASISExpr.EBool true,
+                 S [A "-ccopt"; A "${mariadb_config_cflags}"])
+            ]);
           ([
               "oasis_executable_ffi_types_stubgen_byte";
               "ocaml";
@@ -1206,14 +1216,14 @@ let conf = {MyOCamlbuildFindlib.no_automatic_syntax = false}
 
 let dispatch_default = MyOCamlbuildBase.dispatch_default conf package_default;;
 
-# 1210 "myocamlbuild.ml"
+# 1220 "myocamlbuild.ml"
 (* OASIS_STOP *)
 
 let dispatch = function
   | After_rules ->
     let stubgen          = "stubgen/ffi_stubgen.byte" in
     let stubgen_types    = "stubgen/ffi_types_stubgen.byte" in
-    let stubgen_ml_types = "stubgen/ffi_ml_types_subgen" in
+    let stubgen_ml_types = "stubgen/ffi_ml_types_stubgen" in
 
     rule "generated ml"
       ~dep:stubgen
@@ -1235,8 +1245,11 @@ let dispatch = function
          let cc = BaseEnvLight.var_get "bytecomp_c_compiler" env in
          let stdlib = BaseEnvLight.var_get "standard_library" env in
          let ctypes = BaseEnvLight.var_get "pkg_ctypes_stubs" env in
+         let cflags = BaseEnvLight.var_get "mariadb_config_cflags" env in
+         let config_spec = List.map (fun x -> A x) (String.split_on_char ' ' cflags) in
          Cmd (S [Sh cc; A"stubgen/ffi_ml_types_stubgen.c";
                  A"-I"; P ctypes; A"-I"; P stdlib;
+                 S config_spec;
                  A"-o"; A stubgen_ml_types])
       );
 

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 2e2ddd040569b5370458908776067ca3)
+# DO NOT EDIT (digest: 80c61fdfd8aeddd5cf86170af6cd20b2)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -47,6 +47,7 @@ true: annot, bin_annot
 "lib/ffi_generated_stubs.c": package(unix)
 "lib/ffi_generated_stubs.c": use_mariadb_bindings
 # Executable ffi_stubgen
+<stubgen/*.ml{,i,y}>: oasis_executable_ffi_stubgen_ccopt
 "stubgen/ffi_stubgen.byte": oasis_executable_ffi_stubgen_byte
 <stubgen/*.ml{,i,y}>: oasis_executable_ffi_stubgen_byte
 "stubgen/ffi_stubgen.byte": oasis_executable_ffi_stubgen_native
@@ -55,6 +56,7 @@ true: annot, bin_annot
 "stubgen/ffi_stubgen.byte": package(ctypes.stubs)
 "stubgen/ffi_stubgen.byte": use_mariadb_bindings
 # Executable ffi_types_stubgen
+<stubgen/*.ml{,i,y}>: oasis_executable_ffi_types_stubgen_ccopt
 "stubgen/ffi_types_stubgen.byte": oasis_executable_ffi_types_stubgen_byte
 <stubgen/*.ml{,i,y}>: oasis_executable_ffi_types_stubgen_byte
 "stubgen/ffi_types_stubgen.byte": oasis_executable_ffi_types_stubgen_native

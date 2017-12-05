@@ -11,10 +11,6 @@ FilesAB:      stubgen/ffi_stubgen.ml.ab,
 BuildTools:  ocamlbuild
 Plugins:     META (0.4), DevFiles (0.4)
 
-Flag "mariadb_connector"
-  Description:      Link to the MariaDB C/Connector library
-  Default:          false
-
 Library "mariadb"
   FindlibName:      mariadb
   Path:             lib
@@ -32,11 +28,8 @@ Library "mariadb"
                     Ffi_generated,
                     Ffi_generated_types
   CSources:         ffi_generated_stubs.c
-  CCOpt:            -I $pkg_ctypes_stubs
-  if flag(mariadb_connector)
-    CCLib:          -lmariadb
-  else
-    CCLib:          -lmysqlclient
+  CCOpt:            -I $pkg_ctypes_stubs $mariadb_config_cflags
+  CCLib:            $mariadb_config_libs
   ByteOpt:          -warn-error +1..45
   NativeOpt:        -warn-error +1..45
   BuildDepends:     mariadb_bindings,
@@ -54,6 +47,7 @@ Executable "ffi_stubgen"
   Install:          false
   Path:             stubgen
   MainIs:           ffi_stubgen.ml
+  CCOpt:            $mariadb_config_cflags
   ByteOpt:          -warn-error +1..45
   NativeOpt:        -warn-error +1..45
   BuildDepends:     mariadb_bindings
@@ -62,6 +56,7 @@ Executable "ffi_types_stubgen"
   Install:          false
   Path:             stubgen
   MainIs:           ffi_types_stubgen.ml
+  CCOpt:            $mariadb_config_cflags
   ByteOpt:          -warn-error +1..45
   NativeOpt:        -warn-error +1..45
   BuildDepends:     mariadb_bindings

@@ -1,32 +1,34 @@
 #!/bin/sh
 
-detect () {
-  gcc -o /dev/null detect/detect.c $@ > /dev/null 2>&1
-  return $?
-}
-
+config_binary=""
 include_base=""
-mariadb_connector="false"
 
-if detect -lmariadb; then
-  include_base="mariadb"
-  mariadb_connector="true"
-elif detect -lmysqlclient -DMARIADB_CLIENT; then
+if command -v mysql_config ; then
   include_base="mysql"
+  config_binary=`command -v mysql_config`
 fi
 
-if [ -z "$include_base" ]; then
-  echo "Could not detect a MariaDB client library" 1>&2
+if command -v mariadb_config ; then
+  include_base="mariadb"
+  config_binary=`command -v mariadb_config`
+fi
+
+if [ -z "$config_binary" ]; then
+  echo "Could not find mariadb_config/mysql_config" 1>&2
   exit 1
 fi
 
+mariadb_config_cflags=`$config_binary --cflags`
+mariadb_config_libs=`$config_binary --libs`
 
-echo "mariadb_connector: ................................... $mariadb_connector"
 echo "mariadb_include_base: ................................ $include_base"
+echo "mariadb_config_cflags: ............................... $mariadb_config_cflags"
+echo "mariadb_config_libs: ................................. $mariadb_config_libs"
 
 cat << EOF > setup.data
 mariadb_include_base="$include_base"
-mariadb_connector="$mariadb_connector"
+mariadb_config_cflags="$mariadb_config_cflags"
+mariadb_config_libs="$mariadb_config_libs"
 EOF
 
 # OASIS_START
