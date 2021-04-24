@@ -143,9 +143,7 @@ let rollback mariadb =
 let prepare mariadb query =
   let build_stmt raw =
     if B.mysql_stmt_prepare raw query then
-      match Common.Stmt.init mariadb raw with
-      | Some stmt -> Ok stmt
-      | None -> Error (Common.error mariadb)
+      Ok (Common.Stmt.init mariadb raw)
     else
       Error (Common.error mariadb) in
   match Common.stmt_init mariadb with

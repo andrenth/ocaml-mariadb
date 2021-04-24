@@ -178,9 +178,7 @@ let rollback mariadb =
   (rollback_start mariadb, rollback_cont mariadb)
 
 let build_stmt mariadb raw =
-  match Common.Stmt.init mariadb raw with
-  | Some stmt -> `Ok stmt
-  | None -> `Error (Common.error mariadb)
+  `Ok (Common.Stmt.init mariadb raw)
 
 type prep_stmt =
   { raw   : B.stmt
@@ -644,7 +642,7 @@ module Make (W : Wait) : S with type 'a future = 'a W.IO.future = struct
       let raw = stmt.Common.Stmt.raw in
       let start = handle_free (B.mysql_stmt_free_result_start raw) in
       let cont s = handle_free (B.mysql_stmt_free_result_cont raw s) in
-      let () = match stmt.Common.Stmt.meta with None -> () | Some { res; _ } -> B.mysql_free_result res in
+      Common.Stmt.free_meta stmt;
       nonblocking stmt.Common.Stmt.mariadb (start, cont)
 
     let reset stmt =
