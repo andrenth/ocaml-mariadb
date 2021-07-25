@@ -85,6 +85,9 @@ type error = int * string
 let error mariadb =
   (B.mysql_errno mariadb.raw, B.mysql_error mariadb.raw)
 
+let sqlstate mariadb =
+  B.mysql_sqlstate mariadb.raw
+
 let int_of_server_option = function
   | Multi_statements true -> T.Server_options.multi_statements_on
   | Multi_statements false -> T.Server_options.multi_statements_off
@@ -279,6 +282,9 @@ module Stmt = struct
 
   let error stmt =
     (B.mysql_stmt_errno stmt.raw, B.mysql_stmt_error stmt.raw)
+
+  let sqlstate stmt =
+    B.mysql_stmt_sqlstate stmt.raw
 
   let fetch_field res i =
     coerce (ptr void) (ptr T.Field.t) (B.mysql_fetch_field_direct res i)

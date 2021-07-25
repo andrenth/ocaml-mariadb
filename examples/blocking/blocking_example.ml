@@ -48,6 +48,37 @@ let stream res =
   try Ok (Stream.from next)
   with F.E e -> Error e
 
+let test_sqlstate mariadb =
+  assert (M.sqlstate mariadb = "00000");
+  (match M.prepare mariadb "SELECT * FROM inexistent_table" with
+   | Error _ -> assert (M.sqlstate mariadb <> "00000") (* actually "42S02" *)
+   | Ok _ -> assert false);
+  begin
+    let stmt =
+      M.prepare mariadb
+                "CREATE TEMPORARY TABLE test_sqlstate (i integer PRIMARY KEY)"
+        |> or_die "prepare CREATE TABLE test_sqlstate"
+    in
+    let _ =
+      M.Stmt.execute stmt [||]
+        |> or_die "exec CREATE TABLE test_sqlstate"
+    in
+    M.Stmt.close stmt |> or_die "stmt close CREATE TABLE test_sqlstate"
+  end;
+  for i = 0 to 1 do
+    let stmt =
+      M.prepare mariadb "INSERT INTO test_sqlstate VALUES (?)"
+        |> or_die "prepare in test_sqlstate"
+    in
+    (match M.Stmt.execute stmt [|`Int 1|] with
+     | Error (_, msg) ->
+        assert (i = 1);
+        assert (M.Stmt.sqlstate stmt <> "00000") (* actually "23000" *)
+     | Ok _ -> assert (i = 0));
+
+    M.Stmt.close stmt |> or_die "stmt close in test_sqlstate"
+  done
+
 let main () =
   let mariadb = connect () |> or_die "connect" in
   let query = env "OCAML_MARIADB_QUERY"
@@ -59,6 +90,7 @@ let main () =
   let s = stream res |> or_die "stream" in
   Stream.iter print_row s;
   M.Stmt.close stmt |> or_die "stmt close";
+  test_sqlstate mariadb;
   M.close mariadb;
   M.library_end ();
   printf "done\n%!"
