@@ -1,0 +1,7 @@
+(executable
+ (name discover)
+ (libraries dune-configurator))
+
+(rule
+ (targets mariadb_link_flags.sexp mariadb_preamble.h)
+ (action (run ./discover.exe)))

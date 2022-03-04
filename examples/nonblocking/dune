@@ -1,0 +1,4 @@
+(library
+ (name nonblocking_tests)
+ (wrapped false)
+ (libraries mariadb))

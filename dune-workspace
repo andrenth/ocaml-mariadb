@@ -1,0 +1,7 @@
+(lang dune 3.14)
+
+(env
+ (_
+  ; Temporarily disable additional warnings when coverting to dune; to be fixed
+  ; in a subsequent commit.
+  (flags :standard -w -27-32)))

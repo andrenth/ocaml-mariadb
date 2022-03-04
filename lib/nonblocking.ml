@@ -2,7 +2,7 @@ open Printf
 open Util
 
 module B = Binding_wrappers
-module T = Ffi_bindings.Types(Ffi_generated_types)
+module T = Ffi_generated.Types
 
 module Time = Time
 module Field = Field

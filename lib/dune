@@ -1,0 +1,19 @@
+(library
+ (public_name mariadb)
+ (synopsis "OCaml bindings for MariaDB")
+ (libraries ctypes ctypes.stubs mariadb.bindings unix)
+ (ctypes
+  (external_library_name mariadb_or_mysql_client)
+  (build_flags_resolver
+   (vendored
+    (c_library_flags :standard (:include ../mariadb_link_flags.sexp))))
+  (headers (preamble "%{read:../mariadb_preamble.h}"))
+  (type_description
+   (instance Types)
+   (functor Ffi_bindings))
+  (function_description
+   (concurrency unlocked)
+   (instance Functions)
+   (functor Ffi_bindings))
+  (generated_types Ffi_generated_types)
+  (generated_entry_point Ffi_generated)))
