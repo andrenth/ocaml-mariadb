@@ -120,7 +120,7 @@ let int ?(unsigned = false) b param ~at =
   bind b
     ~buffer:(coerce (ptr int) (ptr void) p)
     ~size:(sizeof int)
-    ~mysql_type:T.Type.long_long
+    ~mysql_type:T.Type.long
     ~unsigned:(if unsigned then yes else no)
     ~at
 
