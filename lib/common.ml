@@ -264,7 +264,7 @@ module Stmt = struct
     ; mariadb : 'm mariadb
     ; num_params : int
     ; params : Bind.t
-    ; meta : meta option
+    ; mutable meta : meta option
     }
   type 'm t = 'm u constraint 'm = [< mode]
 
@@ -303,31 +303,12 @@ module Stmt = struct
 
   let init mariadb raw =
     let np = B.mysql_stmt_param_count raw in
-    match B.mysql_stmt_result_metadata raw with
-    | Some res ->
-        let nf = B.mysql_num_fields res in
-        let meta =
-          { res
-          ; result = alloc_result res nf
-          } in
-        Some
-          { raw
-          ; mariadb
-          ; num_params = np
-          ; params = Bind.alloc np
-          ; meta = Some meta
-          }
-    | None ->
-        if B.mysql_errno mariadb.raw = 0 then
-          Some
-            { raw
-            ; mariadb
-            ; num_params = np
-            ; params = Bind.alloc np
-            ; meta = None
-            }
-        else
-          None
+    { raw
+    ; mariadb
+    ; num_params = np
+    ; params = Bind.alloc np
+    ; meta = None
+    }
 
   let bind_params stmt params =
     match Array.length params with
@@ -379,8 +360,28 @@ module Stmt = struct
         b.Bind.buffers.(i) <- malloc n;
         setf (!@bp) T.Bind.buffer b.Bind.buffers.(i)
 
-  let bind_result stmt =
+  let free_meta stmt =
     match stmt.meta with
+    | Some { res; _ } ->
+        B.mysql_free_result res;
+        stmt.meta <- None
+    | None -> ()
+
+  let meta stmt =
+    free_meta stmt;
+    stmt.meta <- (
+        match B.mysql_stmt_result_metadata stmt.raw with
+        | Some res ->
+            let nf = B.mysql_num_fields res in
+            Some
+              { res
+              ; result = alloc_result res nf
+              }
+        | None -> None);
+    stmt.meta
+
+  let bind_result stmt =
+    match meta stmt with
     | Some meta ->
         let b = meta.result in
         let n = b.Bind.n in

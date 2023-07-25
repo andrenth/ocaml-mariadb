@@ -143,9 +143,7 @@ let rollback mariadb =
 let prepare mariadb query =
   let build_stmt raw =
     if B.mysql_stmt_prepare raw query then
-      match Common.Stmt.init mariadb raw with
-      | Some stmt -> Ok stmt
-      | None -> Error (Common.error mariadb)
+      Ok (Common.Stmt.init mariadb raw)
     else
       Error (Common.error mariadb) in
   match Common.stmt_init mariadb with
@@ -192,6 +190,7 @@ module Stmt = struct
     end
 
   let reset stmt =
+    Common.Stmt.free_meta stmt;
     let raw = stmt.Common.Stmt.raw in
     if B.mysql_stmt_free_result raw && B.mysql_stmt_reset raw then
       Ok ()
@@ -199,6 +198,7 @@ module Stmt = struct
       Error (Common.Stmt.error stmt)
 
   let close stmt =
+    Common.Stmt.free_meta stmt;
     let raw = stmt.Common.Stmt.raw in
     if B.mysql_stmt_free_result raw && B.mysql_stmt_close raw then
       Ok ()
