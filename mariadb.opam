@@ -10,10 +10,10 @@ synopsis: "OCaml bindings for MariaDB"
 description: "OCaml-MariaDB provides Ctypes-based bindings for MariaDB, including its nonblocking API."
 
 build: [
-  ["./configure" "--prefix=%{prefix}%"]
-  [make]
+  ["dune" "subst"] {dev}
+  ["dune" "build" "-p" name "-j" jobs "@install"]
 ]
-install: [make "install"]
+
 depends: [
   "ocaml" {>= "4.07.0"}
   "ocamlfind" {build}
@@ -21,4 +21,5 @@ depends: [
   "ctypes" {>= "0.7.0"}
   "conf-mariadb"
   "conf-gcc"
+  "dune" {>= "3.10.0"}
 ]

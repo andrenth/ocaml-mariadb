@@ -1,0 +1,9 @@
+(executable
+  (name nonblocking_lwt_stress_test)
+  (libraries lwt.unix nonblocking_stress_test)
+  (modules nonblocking_lwt_stress_test))
+
+(executable
+  (name nonblocking_lwt_example)
+  (libraries lwt.unix mariadb)
+  (modules nonblocking_lwt_example))

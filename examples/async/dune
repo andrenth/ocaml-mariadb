@@ -1,0 +1,13 @@
+(executable
+  (name nonblocking_async_stress_test)
+  (libraries async nonblocking_stress_test)
+  (modules nonblocking_async_stress_test))
+
+(executable
+  (name nonblocking_async_example)
+  (libraries async mariadb)
+  (modules nonblocking_async_example))
+
+(env
+  (dev
+    (flags (:standard -w -3))))

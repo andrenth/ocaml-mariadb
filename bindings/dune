@@ -1,0 +1,4 @@
+(library
+  (name ffi_bindings)
+  (package mariadb)
+  (libraries ctypes.stubs))

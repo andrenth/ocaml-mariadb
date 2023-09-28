@@ -1,0 +1,3 @@
+(library
+  (name nonblocking_stress_test)
+  (libraries mariadb))
