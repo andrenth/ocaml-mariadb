@@ -1,0 +1,9 @@
+(executable
+  (name blocking_stress_test)
+  (libraries nonblocking_stress_test)
+  (modules blocking_stress_test))
+
+(executable
+  (name blocking_example)
+  (libraries mariadb)
+  (modules blocking_example))

@@ -1,0 +1,9 @@
+(executable
+  (name nonblocking_select_stress_test)
+  (libraries nonblocking_stress_test)
+  (modules nonblocking_select_stress_test))
+
+(executable
+  (name nonblocking_select_example)
+  (libraries mariadb)
+  (modules nonblocking_select_example))

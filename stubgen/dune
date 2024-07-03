@@ -1,0 +1,95 @@
+(library
+  (name ffi_generated)
+  (package mariadb)
+  (libraries ctypes.stubs)
+  (modules ffi_generated)
+  (c_library_flags :standard %{read-lines:mariadb_libs} -lmariadb)
+  (foreign_stubs
+    (language c)
+    (names ffi_generated_stubs)
+    (include_dirs (lib ctypes) %{read-lines:mariadb_include_dir})))
+
+(rule
+  (targets ffi_generated.ml)
+  (action
+    (with-stdout-to
+      ffi_generated.ml
+      (run ./ffi_stubgen.exe -ml))))
+
+(library
+  (name ffi_generated_types)
+  (package mariadb)
+  (libraries ctypes)
+  (modules ffi_generated_types))
+
+(rule
+  (targets ffi_generated_types.ml)
+  (action
+    (with-stdout-to
+      ffi_generated_types.ml
+      (run ./ffi_ml_types_stubgen))))
+
+(rule
+  (targets ffi_generated_stubs.c)
+  (action
+    (with-stdout-to
+      ffi_generated_stubs.c
+      (progn
+        (echo "#include <mysql.h>\n")
+        (run ./ffi_stubgen.exe -c)))))
+
+(executable
+  (name ffi_stubgen)
+  (libraries ctypes.stubs ffi_bindings)
+  (modules ffi_stubgen))
+
+(rule
+  (target ffi_ml_types_stubgen)
+  (action
+    (run
+      %{cc}
+      %{read-lines:mariadb_cflags}
+      %{read-lines:mariadb_libs}
+      -I%{lib:ctypes:}
+      -I%{ocaml-config:standard_library}
+      -o%{target}
+      %{dep:./ffi_ml_types_stubgen.c})))
+
+(rule
+  (targets ffi_ml_types_stubgen.c)
+  (action
+    (with-stdout-to
+      ffi_ml_types_stubgen.c
+      (progn
+        (echo "#include <%{read:mariadb_include_base}/mysql.h>\n")
+        (run ./ffi_types_stubgen.exe)))))
+
+(executable
+  (name ffi_types_stubgen)
+  (libraries ctypes.stubs ffi_bindings)
+  (modules ffi_types_stubgen))
+
+; TODO -- Copy configure logic
+(rule
+  (action
+    (with-stdout-to
+      mariadb_include_base
+      (echo mariadb))))
+
+(rule
+  (action
+    (with-stdout-to
+      mariadb_cflags
+      (bash "mariadb_config --cflags | xargs -n1"))))
+
+(rule
+  (action
+    (with-stdout-to
+      mariadb_libs
+      (bash "mariadb_config --libs | xargs -n1"))))
+
+(rule
+  (action
+    (with-stdout-to
+      mariadb_include_dir
+      (run mariadb_config --variable=pkgincludedir))))

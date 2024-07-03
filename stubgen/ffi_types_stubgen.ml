@@ -1,3 +1,2 @@
 let () =
-  print_endline "#include <$(mariadb_include_base)/mysql.h>";
   Cstubs.Types.write_c Format.std_formatter (module Ffi_bindings.Types)

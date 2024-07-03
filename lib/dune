@@ -1,0 +1,20 @@
+(library
+  (name mariadb)
+  (public_name mariadb)
+  (libraries
+    ffi_generated
+    ffi_generated_types
+    ffi_bindings
+    ctypes
+    unix)
+  (private_modules
+    Bind
+    Binding_wrappers
+    Blocking
+    Common
+    Field
+    Nonblocking
+    Row
+    Time
+    Util
+    Wait_status))

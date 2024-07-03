@@ -1,0 +1,12 @@
+(rule
+  (alias examples)
+  (action
+    (progn
+      (run ./async/nonblocking_async_example.exe)
+      (run ./async/nonblocking_async_stress_test.exe)
+      (run ./blocking/blocking_example.exe)
+      (run ./blocking/blocking_stress_test.exe)
+      (run ./lwt/nonblocking_lwt_example.exe)
+      (run ./lwt/nonblocking_lwt_stress_test.exe)
+      (run ./select/nonblocking_select_example.exe)
+      (run ./select/nonblocking_select_stress_test.exe))))

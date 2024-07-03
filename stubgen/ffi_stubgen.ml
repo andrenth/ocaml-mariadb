@@ -13,6 +13,5 @@ let _ =
       Cstubs.write_ml
         Format.std_formatter ~prefix (module Ffi_bindings.Bindings)
   | false, true ->
-      print_endline "#include <$(mariadb_include_base)/mysql.h>";
       Cstubs.write_c
         Format.std_formatter ~prefix (module Ffi_bindings.Bindings)
