@@ -150,6 +150,8 @@ let prepare mariadb query =
   | Some raw -> build_stmt raw
   | None -> Error (2008, "out of memory")
 
+let sqlstate = Common.sqlstate
+
 module Res = struct
   type t = [`Blocking] Common.Res.t
 
@@ -196,6 +198,8 @@ module Stmt = struct
       Ok ()
     else
       Error (Common.Stmt.error stmt)
+
+  let sqlstate = Common.Stmt.sqlstate
 
   let close stmt =
     Common.Stmt.free_meta stmt;
