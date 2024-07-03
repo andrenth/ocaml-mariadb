@@ -50,9 +50,9 @@ let stream res =
 let main () =
   let mariadb = connect () |> or_die "connect" in
   let query = env "OCAML_MARIADB_QUERY"
-    "SELECT * FROM mysql.user WHERE User LIKE ?" in
+    "SELECT * FROM mysql.user WHERE User LIKE ? AND ? < 0" in
   let stmt = M.prepare mariadb query |> or_die "prepare" in
-  let res = M.Stmt.execute stmt [| `String "r%" |] |> or_die "exec" in
+  let res = M.Stmt.execute stmt [| `String "r%"; `Int (-1) |] |> or_die "exec" in
   assert (M.Res.affected_rows res = M.Res.num_rows res);
   printf "#rows: %d\n%!" (M.Res.num_rows res);
   let s = stream res in
