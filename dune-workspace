@@ -1,7 +1,5 @@
 (lang dune 3.14)
 
-(env
- (_
-  ; Temporarily disable additional warnings when coverting to dune; to be fixed
-  ; in a subsequent commit.
-  (flags :standard -w -27-32)))
+; Warnings left after the dune migration PR, as they may provide valuable
+; information:
+(env (_ (flags :standard -warn-error -3-32)))

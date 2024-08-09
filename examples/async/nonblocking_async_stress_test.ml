@@ -22,7 +22,7 @@ module Test = Nonblocking_stress_test.Make (struct
     let t = ref false in
     let rc = Deferred.choice rt (fun x -> r := is_ready x) in
     let wc = Deferred.choice wt (fun x -> w := is_ready x) in
-    let tc = Deferred.choice tt (fun x -> t := true) in
+    let tc = Deferred.choice tt (fun _ -> t := true) in
     Deferred.enabled [rc; wc; tc] >>= fun f ->
     ignore (f ());
     Deferred.return (!r, !w, !t)
@@ -48,6 +48,6 @@ module Test = Nonblocking_stress_test.Make (struct
 
 end)
 
-let main = Test.main () >>= fun () -> Shutdown.exit 0
+let _main : unit Deferred.t = Test.main () >>= fun () -> Shutdown.exit 0
 
 let () = never_returns (Scheduler.go ())

@@ -27,7 +27,7 @@ module M = Mariadb.Nonblocking.Make(struct
           ~write:(wfd <> [])
           ~except:(efd <> [])
           ()
-    with Unix.Unix_error (e, _, _) ->
+    with Unix.Unix_error (_, _, _) ->
       return @@ S.create ~timeout: true ()
 end)
 
