@@ -1,0 +1,6 @@
+(library
+ (name mariadb_bindings)
+ (public_name mariadb.bindings)
+ (synopsis "OCaml bindings for MariaDB")
+ (wrapped false)
+ (libraries ctypes ctypes.stubs))

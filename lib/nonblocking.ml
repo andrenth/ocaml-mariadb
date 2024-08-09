@@ -2,7 +2,7 @@ open Printf
 open Util
 
 module B = Binding_wrappers
-module T = Ffi_bindings.Types(Ffi_generated_types)
+module T = Ffi_generated.Types
 
 module Time = Time
 module Field = Field
@@ -191,7 +191,7 @@ let handle_prepare mariadb stmt = function
   | 0, _ -> `Error (Common.error mariadb)
   | s, _ -> `Wait (Status.of_int s)
 
-let prepare_start mariadb stmt query =
+let prepare_start mariadb stmt =
   handle_prepare mariadb stmt
     (B.mysql_stmt_prepare_start stmt.raw stmt.query stmt.len)
 
@@ -206,7 +206,7 @@ let prepare mariadb query =
         ; query = char_ptr_buffer_of_string query
         ; len   = String.length query
         } in
-      `Ok (prepare_start mariadb stmt query, prepare_cont mariadb stmt)
+      `Ok (prepare_start mariadb stmt, prepare_cont mariadb stmt)
   | None -> `Error (Common.error mariadb)
 
 module Res = struct
@@ -531,7 +531,6 @@ module Make (W : Wait) : S with type 'a future = 'a W.IO.future = struct
   let (>>=) = W.IO.(>>=)
   let return = W.IO.return
   let return_unit = return ()
-  let (>>|) fut f = fut >>= fun x -> return (f x)
 
   type flag = Common.flag =
     | Compress

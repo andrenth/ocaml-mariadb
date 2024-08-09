@@ -1,0 +1,6 @@
+(tests
+ (names
+    nonblocking_lwt_example
+    nonblocking_lwt_stress_test)
+ (libraries mariadb lwt lwt.unix nonblocking_tests)
+ (enabled_if %{lib-available:lwt}))

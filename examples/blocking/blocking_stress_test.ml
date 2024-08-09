@@ -24,7 +24,7 @@ let test () =
   let stmt = ref (mk_stmt ()) in
   for _ = 1 to 100 do
     let n = Random.int (1 lsl Random.int 8) in
-    let s = String.init n (fun i -> "ACGT".[Random.int 4]) in
+    let s = String.init n (fun _ -> "ACGT".[Random.int 4]) in
     let res = M.Stmt.execute !stmt [|`String s|] |> or_die "Stmt.execute" in
     assert (M.Res.num_rows res = 1);
     (match M.Res.fetch (module M.Row.Array) res |> or_die "Res.fetch" with

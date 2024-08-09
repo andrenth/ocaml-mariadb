@@ -30,7 +30,7 @@ module Make (W : Mariadb.Nonblocking.Wait) = struct
 
   let random_string () =
     let n = Random.int (1 lsl Random.int 8) in
-    String.init n (fun i -> "ACGT".[Random.int 4])
+    String.init n (fun _ -> "ACGT".[Random.int 4])
 
   let random_param_type _ =
     match Random.int 5 with

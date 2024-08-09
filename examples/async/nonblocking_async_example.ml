@@ -20,7 +20,7 @@ module M = Mariadb.Nonblocking.Make(struct
     let t = ref false in
     let rc = Deferred.choice rt (fun x -> r := is_ready x) in
     let wc = Deferred.choice wt (fun x -> w := is_ready x) in
-    let tc = Deferred.choice tt (fun x -> t := true) in
+    let tc = Deferred.choice tt (fun _ -> t := true) in
     Deferred.enabled [rc; wc; tc] >>= fun f ->
     ignore (f ());
     Deferred.return (!r, !w, !t)
@@ -100,7 +100,7 @@ let stream res =
 let print_rows p =
   Pipe.iter p ~f:print_row
 
-let main =
+let _main : unit Deferred.t =
   connect () >>= or_die "connect" >>= fun mariadb ->
   let query = env "OCAML_MARIADB_QUERY"
     "SELECT * FROM mysql.user WHERE User LIKE ?" in

@@ -1,6 +1,6 @@
 open Ctypes
 
-module T = Ffi_bindings.Types(Ffi_generated_types)
+module T = Ffi_generated.Types
 
 type value =
   [ `Null

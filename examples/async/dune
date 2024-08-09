@@ -1,0 +1,6 @@
+(tests
+ (names
+    nonblocking_async_example
+    nonblocking_async_stress_test)
+ (libraries mariadb async nonblocking_tests)
+ (enabled_if %{lib-available:lwt}))

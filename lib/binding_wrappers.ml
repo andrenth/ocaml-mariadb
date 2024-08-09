@@ -1,8 +1,8 @@
 open Ctypes
 open Util
 
-module B = Ffi_bindings.Bindings(Ffi_generated)
-module T = Ffi_bindings.Types(Ffi_generated_types)
+module B = Ffi_generated.Functions
+module T = Ffi_generated.Types
 
 include B
 

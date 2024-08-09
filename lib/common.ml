@@ -1,7 +1,7 @@
 open Util
 
 module B = Binding_wrappers
-module T = Ffi_bindings.Types(Ffi_generated_types)
+module T = Ffi_generated.Types
 
 module Row = Row
 module Field = Field
@@ -313,7 +313,7 @@ module Stmt = struct
   let bind_params stmt params =
     match Array.length params with
     | 0 -> `Ok stmt
-    | n ->
+    | _ ->
         let b = stmt.params in
         Array.iteri
           (fun at arg ->

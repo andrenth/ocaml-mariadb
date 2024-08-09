@@ -1,6 +1,6 @@
 open Ctypes
 
-module Types (F: Cstubs.Types.TYPE) = struct
+module Types (F: Ctypes.TYPE) = struct
   open F
 
   module Protocol = struct
@@ -161,7 +161,7 @@ module Types (F: Cstubs.Types.TYPE) = struct
   end
 end
 
-module Bindings (F : Cstubs.FOREIGN) = struct
+module Functions (F : Ctypes.FOREIGN) = struct
   open F
 
   type st_mysql
